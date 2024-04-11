@@ -9,6 +9,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sourceText = $data['sourceText'];
     $translatedText = $data['translatedText'];
 
+    echo $sourceText;
+    echo $translatedText;
+
     try {
         // Prepare SQL statement
         $sqlSaveStatement = 'INSERT INTO text (original_text, translated_text) VALUES (?, ?)';
