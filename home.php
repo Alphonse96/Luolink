@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuoLink - Translation App</title>
+    <!-- Include Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
-    <title>Translation App</title>
-    <!-- Include any necessary CSS styles -->
-    <link rel="stylesheet" href="style/style.css">
     <style>
         /* Navbar styles */
         .navbar {
@@ -50,7 +49,7 @@
             position: absolute;
             background-color: #f9f9f9;
             min-width: 120px;
-            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+            box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
             z-index: 1;
             right: 0;
         }
@@ -67,11 +66,16 @@
             justify-content: center;
             height: 100vh;
         }
+
         .profile-image {
-            width: 30px; /* Adjust the width as needed */
-            height: 30px; /* Adjust the height as needed */
-            border-radius: 50%; /* Makes the boundary circular */
-            object-fit: cover; /* Ensures the image covers the entire container */
+            width: 30px;
+            /* Adjust the width as needed */
+            height: 30px;
+            /* Adjust the height as needed */
+            border-radius: 50%;
+            /* Makes the boundary circular */
+            object-fit: cover;
+            /* Ensures the image covers the entire container */
         }
 
         textarea {
@@ -89,7 +93,8 @@
         button {
             width: 48%;
         }
-         /* Additional CSS for the white box background */
+
+        /* Additional CSS for the white box background */
         #translatedTextContainer {
             width: 50%;
             margin-top: 20px;
@@ -98,12 +103,14 @@
             border-radius: 5px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         #translatedText {
             width: 50%;
             text-align: center;
         }
     </style>
 </head>
+
 <body>
     <!-- Navbar -->
     <div class="navbar">
@@ -115,9 +122,9 @@
                 <a href="history.php">History</a>
             </div>
             <div class="navbar-right">
-             <a href="#">
-                 <img src="images/profile-icon.jpg" alt="Profile Picture" class="profile-image">
-             </a>
+                <a href="#">
+                    <img src="images/profile-icon.jpg" alt="Profile Picture" class="profile-image">
+                </a>
 
                 <div class="profile-box">
                     <div class="dropdown-content">
@@ -134,24 +141,27 @@
         <label for="englishText">Enter English Text:</label>
         <textarea id="englishText" rows="4" cols="50"></textarea>
         <div class="button-group">
-            <button onclick="translate()">Translate</button>
+            <button onclick="translateText()">Translate</button>
             <button onclick="saveTranslation()">Save</button>
         </div>
-         <!-- White box background for translated text -->
-         <div id="translatedTextContainer">
+        <!-- White box background for translated text -->
+        <div id="translatedTextContainer">
             <h2>Translated Text:</h2>
             <!-- Move the label above the white box -->
             <p id="translatedText"></p>
         </div>
     </div>
 
-    <!-- Include any necessary JavaScript code -->
+    <!-- Include Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        let translatedText,userInput;
+
         async function query(data) {
             const response = await fetch(
-                "translate.php",
+                "https://api-inference.huggingface.co/models/Alphonse-96/en_luo_mt_v1",
                 {
-                    headers: { "Content-Type": "application/json" },
+                    headers: { Authorization: "Bearer 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" },
                     method: "POST",
                     body: JSON.stringify(data),
                 }
@@ -160,23 +170,36 @@
             return result;
         }
 
-        function translate() {
-            var englishText = document.getElementById("englishText").value;
-            var data = { "inputs": englishText };
-
-            query(data).then((response) => {
-                document.getElementById("translatedText").innerText = response.outputs;
-            }).catch((error) => {
-                console.error('Error:', error);
+        function translateText() {
+            userInput = document.getElementById("englishText").value;
+            query({ "inputs": "translate English to Luo : " + userInput + " target: " }).then((response) => {
+                let result = JSON.parse(JSON.stringify(response));
+                translatedText = result[0]["generated_text"];
+                document.getElementById("translatedText").innerHTML = translatedText;
+                console.log(translatedText);
             });
         }
 
-        function saveTranslation() {
-            // Implement functionality to save translation
-            // You may need AJAX to send data to server-side PHP script
-        }
+        function saveTranslation(){
+            // Sample data object
+            var dataToSend = {
+                    sourceText : userInput,
+                    translatedText : translatedText,
+                };
+                var xhr = new XMLHttpRequest();
+                var url = "save_translation.php";
 
+                xhr.open("POST", url, true);
+                xhr.setRequestHeader("Content-Type", "application/json");
+
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                        console.log(xhr.responseText);
+                    }
+                };
+                xhr.send(JSON.stringify(dataToSend));
+        }
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
