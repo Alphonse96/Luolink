@@ -9,12 +9,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sourceText = $data['sourceText'];
     $translatedText = $data['translatedText'];
 
-    $sqlSaveStatement = 'INSERT INTO text (original_text, translated_text) VALUES ("$sourceText","$translatedText")';
-    if ($con->execute_query($sqlSaveStatement)){
-        echo "<script> alert(\"Translation successfully saved !\"); </script>";
+    try {
+        // Prepare SQL statement
+        $sqlSaveStatement = 'INSERT INTO text (original_text, translated_text) VALUES (?, ?)';
+        
+        // Prepare and execute the statement
+        $stmt = $con->prepare($sqlSaveStatement);
+        $stmt->bind_param('ss', $sourceText, $translatedText);
+        $stmt->execute();
+
+        echo "Translation successfully saved!";
+    } catch (Exception $e) {
+        // Handle exceptions
+        echo "Error: " . $e->getMessage();
     }
 } else {
     // Handle the request method other than POST if needed
     echo "Invalid request method";
 }
-
