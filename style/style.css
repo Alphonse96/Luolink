@@ -81,6 +81,10 @@ body{
     line-height: 60px;
     z-index: 100;
 }
+.history {
+    margin-left: 1px;
+    padding-right: 20px; /* Adjust padding for spacing */
+}
 .logo{
     font-size: 25px;
     font-weight: 900;
@@ -93,6 +97,21 @@ body{
 .right-links a{
     padding: 0 10px;
 }
+.right-links {
+    display: flex;
+    align-items: right;
+    margin-left: auto; /* Vertically center items */
+}
+.logout {
+    margin-left: 1px;
+    margin-right: 10px;
+    padding: 0; /* Push the logout button to the right */
+}
+.logout button.btn {
+    width: 100%; /* Make the button width 100% of its parent container */
+    padding: 0; /* Remove padding */
+}
+
 main{
     display: flex;
     align-items: center;

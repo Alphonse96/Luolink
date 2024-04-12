@@ -19,7 +19,7 @@
 <body>
     <div class="nav">
         <div class="logo">
-            <p><a href="home.php"> LuoLink</a></p>
+            <p><a href="home.php"> Luolink</a></p>
         </div>
 
         <div class="right-links">

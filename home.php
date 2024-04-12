@@ -1,3 +1,11 @@
+<?php 
+   session_start();
+
+   include("php/config.php");
+   if(!isset($_SESSION['valid'])){
+    header("Location: index.php");
+   }
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,6 +15,7 @@
     <title>LuoLink - Translation App</title>
     <!-- Include Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style/style.css">
     <style>
         /* Navbar styles */
         .navbar {
@@ -112,30 +121,33 @@
 </head>
 
 <body>
-    <!-- Navbar -->
-    <div class="navbar">
-        <div class="navbar-left">
-            <h1>LuoLink</h1>
-        </div>
-        <div class="navbar-right">
-            <div class="navbar-left">
-                <a href="history.php">History</a>
-            </div>
-            <div class="navbar-right">
-                <a href="#">
-                    <img src="images/profile-icon.jpg" alt="Profile Picture" class="profile-image">
-                </a>
 
-                <div class="profile-box">
-                    <div class="dropdown-content">
-                        <a href="#">My Profile</a>
-                        <a href="#">Logout</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+ <!-- Navbar -->
+ <div class="nav">
+    <div class="logo">
+        <p><a href="home.php">Luolink</a></p>
     </div>
+    <div class="right-links">
+        <?php 
+        $id = $_SESSION['id'];
+        $query = mysqli_query($con, "SELECT * FROM users WHERE Id=$id");
 
+        while ($result = mysqli_fetch_assoc($query)) {
+            $res_id = $result['Id'];
+        }
+        
+        echo "<a href='edit.php?Id=$res_id'>Change Profile</a>";
+        ?>
+    </div>
+    <div class="history">
+        <a href="history.php">History</a>
+    </div>
+    <div class="logout">
+        <a href="php/logout.php"><button class="btn">Log Out</button></a>
+    </div>
+</div>
+
+    
     <!-- Translation form -->
     <div class="container">
         <label for="englishText">Enter English Text:</label>
@@ -155,7 +167,7 @@
     <!-- Include Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        let translatedText,userInput;
+        let translatedText,userInput,userId;
 
         async function query(data) {
             const response = await fetch(
@@ -183,6 +195,7 @@
         function saveTranslation(){
             // Sample data object
             var dataToSend = {
+                    userId: <?php echo $_SESSION['id']; ?>,
                     sourceText : userInput,
                     translatedText : translatedText,
                 };
@@ -194,7 +207,7 @@
 
                 xhr.onreadystatechange = function () {
                     if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                        console.log(xhr.responseText);
+                        alert("Translation successfully saved !");
                     }
                 };
                 xhr.send(JSON.stringify(dataToSend));

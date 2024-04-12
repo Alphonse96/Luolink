@@ -6,22 +6,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $data = json_decode(file_get_contents("php://input"), true);
 
     // Accessing the data
+    $userId = $data['userId'];
     $sourceText = $data['sourceText'];
     $translatedText = $data['translatedText'];
 
-    echo $sourceText;
-    echo $translatedText;
-
     try {
         // Prepare SQL statement
-        $sqlSaveStatement = 'INSERT INTO text (original_text, translated_text) VALUES (?, ?)';
+        $sqlSaveStatement = 'INSERT INTO text (Id, original_text, translated_text) VALUES (?, ?, ?)';
         
         // Prepare and execute the statement
         $stmt = $con->prepare($sqlSaveStatement);
-        $stmt->bind_param('ss', $sourceText, $translatedText);
+        $stmt->bind_param('iss', $userId, $sourceText, $translatedText);
         $stmt->execute();
-
-        echo "Translation successfully saved!";
     } catch (Exception $e) {
         // Handle exceptions
         echo "Error: " . $e->getMessage();

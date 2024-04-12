@@ -1,3 +1,23 @@
+<?php
+// Start the session
+session_start();
+
+// Check if the user is logged in
+if (!isset($_SESSION['id'])) {
+    // Redirect to the login page if not logged in
+    header("Location: index.php");
+    exit();
+}
+
+// Include the database connection file
+include_once "php/config.php";
+
+// Fetch data from the 'text' table for the logged-in user
+$id = $_SESSION['id'];
+$sql = "SELECT * FROM `text` WHERE `Id` = $id";
+$result = mysqli_query($con, $sql);
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -101,31 +121,67 @@
             width: 50%;
             text-align: center;
         }
+
+        table {
+    border-collapse: separate;
+    border-spacing: 10px; /* Adjust spacing between cells */
+    width: 90%; /* Make the table wider */
+    background-color: #fff; /* White background */
+       }
+
+       th, td {
+    border: 1px solid #ccc; /* Grey border */
+    padding: 12px; /* Padding around cell content */
+    text-align: left;
+       }
+
+     th {
+    background-color: #333;
+    color: #fff;
+    }
     </style>
 </head>
 <body>
     <!-- Navbar -->
-    <div class="navbar">
-        <div class="navbar-left">
-            <a href="home.php"><h1>LuoLink</h1></a>
+    <div class="nav">
+        <div class="logo">
+            <p><a href="home.php"> Luolink</a></p>
         </div>
-        <div class="navbar-right">
-            <div class="navbar-right">
-             <a href="#">
-                 <img src="images/profile-icon.jpg" alt="Profile Picture" class="profile-image">
-             </a>
 
-                <div class="profile-box">
-                    <div class="dropdown-content">
-                        <a href="#">My Profile</a>
-                        <a href="#">Logout</a>
-                    </div>
-                </div>
-            </div>
+        <div class="right-links">
+            <a href="edit.php">Change Profile</a>
         </div>
+        <div class="logout">
+        <a href="php/logout.php"><button class="btn">Log Out</button></a>
     </div>
+    </div>
+    <div class="container">
+        <h2>History</h2>
+        <?php
+        // Check if there are any rows returned
+        if (mysqli_num_rows($result) > 0) {
+            // Output table headers
+            echo "<table>";
+            echo "<tr><th>ID</th><th>Original Text</th><th>Translated Text</th><th>Date Posted</th></tr>";
 
-    <!-- Translation form -->
+            // Output data for each row
+            while ($row = mysqli_fetch_assoc($result)) {
+                echo "<tr>";
+                echo "<td>" . $row['text_id'] . "</td>";
+                echo "<td>" . $row['original_text'] . "</td>";
+                echo "<td>" . $row['translated_text'] . "</td>";
+                echo "<td>" . $row['date_posted'] . "</td>";
+                echo "</tr>";
+            }
+
+            // Close the table
+            echo "</table>";
+        } else {
+            // If no rows are returned, display a message
+            echo "No history found.";
+        }
+        ?>
+    </div>
     
-</body>
+    </body>
 </html>
